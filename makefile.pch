@@ -1,0 +1,38 @@
+
+COMMON_CFLAGS = /TP /nologo /EHsc /errorReport:none /MD /O2 /Oy- /Zc:rvalueCast /Zc:strictStrings /volatile:iso /Zc:__cplusplus /permissive- /std:c++17 /Zc:inline
+
+COMMON_LINKFLAGS = /nologo /INCREMENTAL:NO /LARGEADDRESSAWARE /OPT:REF
+
+.PHONY : all
+all : main1.exe main2.exe 
+
+pch.obj: pch.hpp
+	cl $(COMMON_CFLAGS) /Fopch.obj /c pch.hpp /Yc /Fppch.pch
+
+USE_PCHFLAGS = /FIpch.hpp /Yupch.hpp /Fppch.pch
+
+common.obj: common.cpp common.hpp pch.hpp pch.obj
+	cl $(COMMON_CFLAGS) /Focommon.obj /c common.cpp \
+		$(USE_PCHFLAGS)
+
+main1.obj: main1.cpp common.hpp pch.hpp pch.obj
+	cl $(COMMON_CFLAGS) /Fomain1.obj /c main1.cpp \
+		$(USE_PCHFLAGS) 
+
+main2.obj: main2.cpp common.hpp pch.hpp pch.obj
+	cl $(COMMON_CFLAGS) /Fomain2.obj /c main2.cpp \
+		$(USE_PCHFLAGS) 
+
+main1.exe: main1.obj common.obj pch.obj
+	link $(COMMON_LINKFLAGS) /OUT:main1.exe /PDB:main1.pdb common.obj main1.obj \
+		pch.obj /DEBUG
+
+main2.exe: main2.obj common.obj pch.obj
+	link $(COMMON_LINKFLAGS) /OUT:main2.exe /PDB:main2.pdb common.obj main2.obj \
+		pch.obj /DEBUG
+
+clean:
+	del pch.pch *.obj *.pdb main1.exe main2.exe
+
+
+

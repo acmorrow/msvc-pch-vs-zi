@@ -1,0 +1,31 @@
+
+COMMON_CFLAGS = /TP /nologo /EHsc /errorReport:none /MD /O2 /Oy- /Zc:rvalueCast /Zc:strictStrings /volatile:iso /Zc:__cplusplus /permissive- /std:c++17 /Zc:inline
+
+COMMON_LINKFLAGS = /nologo /INCREMENTAL:NO /LARGEADDRESSAWARE /OPT:REF
+
+.PHONY : all
+all : main1.exe main2.exe 
+
+common.obj: common.cpp common.hpp
+	cl $(COMMON_CFLAGS) /Focommon.obj /c common.cpp \
+		/Zi /Fdcommon.obj.pdb
+
+main1.obj: main1.cpp common.hpp
+	cl $(COMMON_CFLAGS) /Fomain1.obj /c main1.cpp \
+		/Zi /Fdmain1.obj.pdb 
+
+main2.obj: main2.cpp common.hpp
+	cl $(COMMON_CFLAGS) /Fomain2.obj /c main2.cpp \
+		/Zi /Fdmain2.obj.pdb
+
+main1.exe: main1.obj common.obj
+	link $(COMMON_LINKFLAGS) /OUT:main1.exe /PDB:main1.pdb common.obj main1.obj \
+		/DEBUG:fastlink
+
+main2.exe: main2.obj common.obj
+	link $(COMMON_LINKFLAGS) /OUT:main2.exe /PDB:main2.pdb common.obj main2.obj \
+		/DEBUG:fastlink
+
+clean:
+	del *.obj *.pdb main1.exe main2.exe
+
